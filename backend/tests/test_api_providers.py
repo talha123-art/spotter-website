@@ -26,9 +26,11 @@ def _dep_iso(hours_ahead: float = 1) -> str:
 # ---------------------------------------------------------------- mock mode e2e
 
 
-def test_health_endpoint():
-    r = APIClient().get("/api/health")
-    assert r.status_code == 200 and r.json()["status"] == "ok"
+def test_health_endpoint(settings):
+    settings.DEBUG = False
+    r = APIClient().get("/api/health", HTTP_HOST="spotter-api.onrender.com")
+    assert r.status_code == 200
+    assert r.json()["status"] == "ok"
 
 
 def test_geocode_mock_and_validation(settings):

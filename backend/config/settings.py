@@ -12,9 +12,17 @@ def env_list(name: str, default: str = "") -> list[str]:
     return [x.strip() for x in os.environ.get(name, default).split(",") if x.strip()]
 
 
-SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "dev-insecure-key-change-me")  # no secrets required
-DEBUG = env_bool("DJANGO_DEBUG", True)
-ALLOWED_HOSTS = env_list("ALLOWED_HOSTS", "localhost,127.0.0.1,0.0.0.0,.onrender.com,.railway.app")
+SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY") or os.environ.get("SECRET_KEY") or "dev-insecure-key-change-me"
+DEBUG = env_bool("DJANGO_DEBUG", True) if "DJANGO_DEBUG" in os.environ else env_bool("DEBUG", True)
+
+ALLOWED_HOSTS = env_list(
+    "ALLOWED_HOSTS",
+    "localhost,127.0.0.1,0.0.0.0,.onrender.com,.railway.app",
+)
+# Automatically include Render's injected hostname if present
+render_host = os.environ.get("RENDER_EXTERNAL_HOSTNAME", "").strip()
+if render_host and render_host not in ALLOWED_HOSTS:
+    ALLOWED_HOSTS.append(render_host)
 
 INSTALLED_APPS = [
     "django.contrib.contenttypes",
@@ -38,21 +46,33 @@ MIDDLEWARE = [
 ROOT_URLCONF = "config.urls"
 WSGI_APPLICATION = "config.wsgi.application"
 TEMPLATES: list = []
-DATABASES: dict = {}  # stateless API; no database required
 
-STATIC_URL = "static/"
+# Stateless API: works with no external DB; SQLite configured as safe default if any tool inspects DATABASES
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "db.sqlite3",
+    }
+}
+
+STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
+STATIC_ROOT.mkdir(parents=True, exist_ok=True)
 WHITENOISE_AUTOREFRESH = DEBUG
+WHITENOISE_USE_FINDERS = True
 USE_TZ = True
 TIME_ZONE = "UTC"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # --- CORS -------------------------------------------------------------------
+CORS_ALLOW_ALL_ORIGINS = env_bool("CORS_ALLOW_ALL_ORIGINS", False)
 CORS_ALLOWED_ORIGINS = env_list(
-    "CORS_ALLOWED_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173,http://localhost:4173"
+    "CORS_ALLOWED_ORIGINS",
+    "http://localhost:5173,http://127.0.0.1:5173,http://localhost:4173",
 )
 CORS_ALLOWED_ORIGIN_REGEXES = env_list(
-    "CORS_ALLOWED_ORIGIN_REGEXES", r"^https://.*\.vercel\.app$,^https://.*\.netlify\.app$"
+    "CORS_ALLOWED_ORIGIN_REGEXES",
+    r"^https://.*\.vercel\.app$,^https://.*\.netlify\.app$",
 )
 
 # --- Cache ------------------------------------------------------------------
