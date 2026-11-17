@@ -1,0 +1,50 @@
+{
+  "description": "Deterministic mock weather scenario. Times (hours) are relative to the current UTC hour. Designed around the demo trip Chicago, IL -> Denver, CO (see DEMO.md).",
+  "storms": [
+    {
+      "name": "Central Nebraska wind + snow storm (I-80 corridor)",
+      "lat": 41.15,
+      "lng": -98.6,
+      "radius_mi": 85,
+      "peak_wind": 61,
+      "peak_snow": 1.3,
+      "peak_rain": 0.0,
+      "start_h": -12,
+      "end_h": 30,
+      "drift_lng_h": 0.03
+    },
+    {
+      "name": "Kansas wind band (I-70 corridor) - load-weight demo",
+      "lat": 39.25,
+      "lng": -96.4,
+      "radius_mi": 60,
+      "peak_wind": 50,
+      "peak_rain": 0.35,
+      "start_h": -12,
+      "end_h": 36,
+      "drift_lng_h": 0.02
+    },
+    {
+      "name": "Front Range blizzard arriving tomorrow (all-routes No Travel demo)",
+      "lat": 39.8,
+      "lng": -104.6,
+      "radius_mi": 70,
+      "peak_wind": 58,
+      "peak_snow": 2.4,
+      "start_h": 30,
+      "end_h": 60,
+      "drift_lng_h": 0.0
+    },
+    {
+      "name": "Iowa rain band",
+      "lat": 41.7,
+      "lng": -92.5,
+      "radius_mi": 55,
+      "peak_wind": 28,
+      "peak_rain": 0.3,
+      "start_h": 0,
+      "end_h": 20,
+      "drift_lng_h": 0.15
+    }
+  ]
+}
